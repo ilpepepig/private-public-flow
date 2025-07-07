@@ -16,9 +16,7 @@ pub contract DebugContract {
 
     #[private]
     fn fail_in_private() {
-        DebugContract::at(context.this_address())
-            .fail_in_public()
-            .enqueue(&mut context);
+        DebugContract::at(context.this_address()).fail_in_public().enqueue(&mut context);
 
         assert(false, "Expected failure");
     }
@@ -27,9 +25,9 @@ pub contract DebugContract {
     fn check_and_push_nullifier() {
         let some_hash: Field = 1234;
 
-        DebugContract::at(context.this_address())
-            .check_nullifier_existence(some_hash)
-            .enqueue(&mut context);
+        DebugContract::at(context.this_address()).check_nullifier_existence(some_hash).enqueue(
+            &mut context,
+        );
 
         context.push_nullifier(some_hash);
     }
@@ -39,10 +37,10 @@ pub contract DebugContract {
         let some_hash: Field = 1234;
 
         context.push_nullifier(some_hash);
-        
-        DebugContract::at(context.this_address())
-            .check_nullifier_existence(some_hash)
-            .enqueue(&mut context);
+
+        DebugContract::at(context.this_address()).check_nullifier_existence(some_hash).enqueue(
+            &mut context,
+        );
     }
 
     #[public]

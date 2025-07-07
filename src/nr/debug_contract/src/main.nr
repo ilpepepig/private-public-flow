@@ -7,65 +7,53 @@ pub contract DebugContract {
     // aztec library
     use aztec::{
         context::PrivateContext,
-        macros::{functions::{initializer, internal, private, public}, storage::storage},
-        prelude::{AztecAddress, Map, PrivateSet},
+        macros::functions::{initializer, internal, private, public},
     };
-    // note library
-    use uint_note::uint_note::{PartialUintNote, UintNote};
-
-    #[storage]
-    struct Storage<Context> {
-        private_balances: Map<AztecAddress, PrivateSet<UintNote, Context>, Context>,
-    }
 
     #[public]
     #[initializer]
     fn constructor() {}
 
     #[private]
-    fn f_succeeds(from: AztecAddress, to: AztecAddress) {
-        let completer = context.this_address();
-        let partial_note: PartialUintNote = UintNote::partial(
-            to,
-            storage.private_balances.at(to).storage_slot,
-            &mut context,
-            to,
-            from,
-            completer,
-        );
-
-        let some_hash: Field = 1234;
-        context.push_nullifier(some_hash);
-
+    fn fail_in_private() {
         DebugContract::at(context.this_address())
-            .complete_partial_note(partial_note.commitment)
+            .fail_in_public()
             .enqueue(&mut context);
+
+        assert(false, "Expected failure");
     }
 
     #[private]
-    fn f_fails(from: AztecAddress, to: AztecAddress) {
+    fn check_and_push_nullifier() {
         let some_hash: Field = 1234;
-        context.push_nullifier(some_hash);
-
-        let completer = context.this_address();
-        let partial_note: PartialUintNote = UintNote::partial(
-            to,
-            storage.private_balances.at(to).storage_slot,
-            &mut context,
-            to,
-            from,
-            completer,
-        );
 
         DebugContract::at(context.this_address())
-            .complete_partial_note(partial_note.commitment)
+            .check_nullifier_existence(some_hash)
+            .enqueue(&mut context);
+
+        context.push_nullifier(some_hash);
+    }
+
+    #[private]
+    fn push_and_check_nullifier() {
+        let some_hash: Field = 1234;
+
+        context.push_nullifier(some_hash);
+        
+        DebugContract::at(context.this_address())
+            .check_nullifier_existence(some_hash)
             .enqueue(&mut context);
     }
 
     #[public]
     #[internal]
-    fn complete_partial_note(commitment: Field) {
-        let completer = context.this_address();
-        PartialUintNote { commitment }.complete(&mut context, completer, 1);
+    fn check_nullifier_existence(some_hash: Field) {
+        assert(context.nullifier_exists(some_hash, context.this_address()), "Nullifier not found");
+    }
+
+    #[public]
+    #[internal]
+    fn fail_in_public() {
+        assert(false, "Unexpected failure");
     }
 }

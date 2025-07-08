@@ -3,7 +3,7 @@ mod test;
 use aztec::macros::aztec;
 
 #[aztec]
-pub contract DebugContract {
+pub contract PrivatePublic {
     // aztec library
     use aztec::{
         context::PrivateContext,
@@ -16,7 +16,7 @@ pub contract DebugContract {
 
     #[private]
     fn fail_in_private() {
-        DebugContract::at(context.this_address()).fail_in_public().enqueue(&mut context);
+        PrivatePublic::at(context.this_address()).fail_in_public().enqueue(&mut context);
 
         assert(false, "Expected failure");
     }
@@ -25,7 +25,7 @@ pub contract DebugContract {
     fn check_and_push_nullifier() {
         let some_hash: Field = 1234;
 
-        DebugContract::at(context.this_address()).check_nullifier_existence(some_hash).enqueue(
+        PrivatePublic::at(context.this_address()).check_nullifier_existence(some_hash).enqueue(
             &mut context,
         );
 
@@ -38,7 +38,7 @@ pub contract DebugContract {
 
         context.push_nullifier(some_hash);
 
-        DebugContract::at(context.this_address()).check_nullifier_existence(some_hash).enqueue(
+        PrivatePublic::at(context.this_address()).check_nullifier_existence(some_hash).enqueue(
             &mut context,
         );
     }

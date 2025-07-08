@@ -1,5 +1,5 @@
 [package]
-name = "debug_contract"
+name = "private_public"
 type = "contract"
 compiler_version = ">=1.0.0"
 authors = [""]

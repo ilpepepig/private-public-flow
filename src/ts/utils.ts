@@ -6,9 +6,9 @@ import {
   AztecAddress,
 } from "@aztec/aztec.js";
 import {
-  DebugContractContract,
-  DebugContractContractArtifact,
-} from "../artifacts/DebugContract.js";
+  PrivatePublicContract,
+  PrivatePublicContractArtifact,
+} from "../artifacts/PrivatePublic.js";
 
 export const createPXE = async (id: number = 0) => {
   const { BASE_PXE_URL = `http://localhost` } = process.env;
@@ -23,21 +23,21 @@ export const setupSandbox = async () => {
 };
 
 /**
- * Deploys the DebugContract contract.
+ * Deploys the PrivatePublic contract.
  * @param deployer - The wallet to deploy the contract with.
  * @param owner - The address of the owner of the contract.
  * @returns A deployed contract instance.
  */
-export async function deployDebugContract(
+export async function deployPrivatePublic(
   deployer: AccountWallet,
-): Promise<DebugContractContract> {
+): Promise<PrivatePublicContract> {
   const contract = await Contract.deploy(
     deployer,
-    DebugContractContractArtifact,
+    PrivatePublicContractArtifact,
     [],
     "constructor", // not actually needed since it's the default constructor
   )
     .send()
     .deployed();
-  return contract as DebugContractContract;
+  return contract as PrivatePublicContract;
 }

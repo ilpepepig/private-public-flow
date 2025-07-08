@@ -1,7 +1,7 @@
 import {
-  DebugContractContract,
-  DebugContractContractArtifact,
-} from "../artifacts/DebugContract.js";
+  PrivatePublicContract,
+  PrivatePublicContractArtifact,
+} from "../artifacts/PrivatePublic.js";
 import {
   AccountWallet,
   CompleteAddress,
@@ -9,9 +9,9 @@ import {
   AccountWalletWithSecretKey,
 } from "@aztec/aztec.js";
 import { getInitialTestAccountsWallets } from "@aztec/accounts/testing";
-import { deployDebugContract, setupSandbox } from "./utils.js";
+import { deployPrivatePublic, setupSandbox } from "./utils.js";
 
-describe("DebugContract Contract", () => {
+describe("PrivatePublic Contract", () => {
   let pxe: PXE;
   let wallets: AccountWalletWithSecretKey[] = [];
   let accounts: CompleteAddress[] = [];
@@ -20,7 +20,7 @@ describe("DebugContract Contract", () => {
   let bob: AccountWallet;
   let carl: AccountWallet;
 
-  let debug_contract: DebugContractContract;
+  let private_public_contract: PrivatePublicContract;
 
   beforeAll(async () => {
     pxe = await setupSandbox();
@@ -34,21 +34,26 @@ describe("DebugContract Contract", () => {
   });
 
   beforeEach(async () => {
-    debug_contract = await deployDebugContract(alice);
+    private_public_contract = await deployPrivatePublic(alice);
   });
 
   it("private_public_assertion_order", async () => {
-    await expect(debug_contract.methods.fail_in_private().send().wait())
-      .rejects.toThrow
-      //Expected failure,
-      ();
+    await expect(
+      private_public_contract.methods.fail_in_private().send().wait(),
+    ).rejects.toThrow("Expected failure");
   });
 
   it("check_nullifier_existence", async () => {
-    await debug_contract.methods.push_and_check_nullifier().send().wait();
+    await private_public_contract.methods
+      .push_and_check_nullifier()
+      .send()
+      .wait();
   });
 
   it("check_nullifier_existence_inverted_order", async () => {
-    await debug_contract.methods.check_and_push_nullifier().send().wait();
+    await private_public_contract.methods
+      .check_and_push_nullifier()
+      .send()
+      .wait();
   });
 });
